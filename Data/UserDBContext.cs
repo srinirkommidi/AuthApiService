@@ -11,18 +11,12 @@ namespace LogInAuthService.Data
         }
        
         public DbSet<User> Users { get; set; }
-        public DbSet<UserCredentials> UserCredentials { get; set; }
-        public DbSet<UserDetails> UserDetails { get; set; }
+        public DbSet<UserDetails> UserDetails { get; set; }  
         public DbSet<Address> Address { get; set; }
         public DbSet<AccountDetails> AccountDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.UserCredentials)
-                .WithOne(uc => uc.User)
-                .HasForeignKey<UserCredentials>(uc => uc.UserId);
 
             modelBuilder.Entity<User>()
                 .HasOne(u => u.UserDetails)
@@ -39,9 +33,10 @@ namespace LogInAuthService.Data
                 .WithOne(ad => ad.User)
                 .HasForeignKey<AccountDetails>(ad => ad.UserId);
 
-//modelBuilder.Entity<RegistrationMV>().HasNoKey();
+
 
         }
-        public DbSet<LogInAuthService.ModelView.RegistrationMV> RegistrationMV { get; set; } = default!;
+       
+        
     }
 }

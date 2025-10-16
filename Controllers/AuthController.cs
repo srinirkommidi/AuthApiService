@@ -18,7 +18,7 @@ namespace LogInAuthService.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] UserCredentials creds)
+        public IActionResult Login([FromBody] User creds)
         {
             // Demo: validate against hard-coded user. Replace with DB/Identity in real apps.
             if (creds is null || creds.Username != "admin" || creds.Password != "admin123")

@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using LogInAuthService.Data;
+using LogInAuthService.Models;
+using LogInAuthService.ModelView;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LogInAuthService.Data;
-using LogInAuthService.ModelView;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace LogInAuthService.Controllers
 {
@@ -23,23 +24,23 @@ namespace LogInAuthService.Controllers
 
         // GET: api/Registration
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RegistrationMV>>> GetRegistrationMV()
+        public async Task<ActionResult<IEnumerable<User>>> GetRegistrationMV()
         {
-            return await _context.RegistrationMV.ToListAsync();
+            return await _context.Users.ToListAsync();
         }
 
         // GET: api/Registration/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RegistrationMV>> GetRegistrationMV(int id)
+        public async Task<ActionResult<User>> GetRegistrationMV(int id)
         {
-            var registrationMV = await _context.RegistrationMV.FindAsync(id);
+            var user = await _context.Users.FindAsync(id);
 
-            if (registrationMV == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return registrationMV;
+            return user;
         }
 
         // PUT: api/Registration/5
@@ -76,25 +77,65 @@ namespace LogInAuthService.Controllers
         // POST: api/Registration
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<RegistrationMV>> PostRegistrationMV(RegistrationMV registrationMV)
+        public async Task<ActionResult<User>> PostRegistrationMV(RegistrationMV registrationMV)
         {
-            _context.RegistrationMV.Add(registrationMV);
+            var user = new User()
+            {
+                Username = registrationMV.Username,
+                Password = registrationMV.Password
+            };
+            user.UserDetails = new UserDetails
+            {
+                UserId = user.Id,
+                firstName = registrationMV.firstName,
+                lastName = registrationMV.lastName,
+                age = registrationMV.age,
+                email = registrationMV.Username,
+                roles = registrationMV.roles
+            };
+            user.Address = new Address
+            {
+                UserId = user.Id,
+                street = registrationMV.Street,
+                city = registrationMV.City,
+                state = registrationMV.State,
+                zipcode = registrationMV.ZipCode,
+                country = registrationMV.Country
+            };
+            user.AccountDetails = new AccountDetails
+            {
+                UserId = user.Id,
+                accountNumber = registrationMV.accountNumber,
+                bankName = registrationMV.bankName,
+                bankCode = registrationMV.bankCode,
+                branch = registrationMV.branch,
+                ifscCode = registrationMV.ifscCode,
+                upiId = registrationMV.upiId,
+                dateOfExpiry = registrationMV.dateOfExpiry,
+                accountType = registrationMV.accountType,
+                nominee = registrationMV.nominee,
+                relationWithNominee = registrationMV.relationWithNominee,
+                isActive = registrationMV.isActive,
+                balance = registrationMV.balance
+            };
+
+            _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRegistrationMV", new { id = registrationMV.Id }, registrationMV);
+                       return CreatedAtAction("GetRegistrationMV", new { id = user.Id }, User);
         }
 
         // DELETE: api/Registration/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRegistrationMV(int id)
         {
-            var registrationMV = await _context.RegistrationMV.FindAsync(id);
-            if (registrationMV == null)
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
             {
                 return NotFound();
             }
 
-            _context.RegistrationMV.Remove(registrationMV);
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -102,7 +143,7 @@ namespace LogInAuthService.Controllers
 
         private bool RegistrationMVExists(int id)
         {
-            return _context.RegistrationMV.Any(e => e.Id == id);
+            return _context.Users.Any(e => e.Id == id);
         }
     }
 }
