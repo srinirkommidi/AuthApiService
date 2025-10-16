@@ -1,13 +1,18 @@
 using System.Text;
+using LogInAuthService.Data;
 using LogInAuthService.Models;
 using LogInAuthService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Bind Jwt settings
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+//DB Connection
+var connString = builder.Configuration.GetConnectionString("prodbConnn");
+builder.Services.AddDbContext<UserDBContext>(options => options.UseSqlServer(connString));
 
 // Register token service
 builder.Services.AddSingleton<ITokenService, TokenService>();
