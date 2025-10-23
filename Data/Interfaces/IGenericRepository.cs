@@ -1,16 +1,16 @@
-﻿namespace LogInAuthService.Data.Interfaces
+﻿using System.Linq.Expressions;
+
+namespace LogInAuthService.Data.Interfaces
 {
-    public interface IGenericRepository<T> where T : class
+    public interface IGenericRepository<TEntity> where TEntity : class
     {
-        void Add(T entity);
-        void Update(T entity);
-        void Delete(T entity);
-        Task<T> GetByIdAsync(int id);
-        Task<IEnumerable<T>> GetAllAsync();
-        Task SaveChangesAsync();
-        Task DeleteChangesAsync();
-        Task<T> GetByIdAsync(
-            string id);
+
+        TEntity GetSingleByCondition(Expression<Func<TEntity, bool>> predicate);
+        Task<TEntity> GetSingleByConditionAsync(Expression<Func<TEntity, bool>> predicate);
+        IEnumerable<TEntity> GetAll();
+        Task<IEnumerable<TEntity>> GetAllAsync();
+        TEntity GetById(object id);
 
     }
 }
+

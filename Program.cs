@@ -5,11 +5,15 @@ using LogInAuthService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
+using LogInAuthService.Data.Interfaces;
+using LogInAuthService.Data.Repository;
 var builder = WebApplication.CreateBuilder(args);
 
 // Bind Jwt settings
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+
+builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
 //DB Connection
 var connString = builder.Configuration.GetConnectionString("prodbConnn");
 builder.Services.AddDbContext<UserDBContext>(options => options.UseSqlServer(connString));
@@ -45,7 +49,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",  policy =>
     {
-        policy.WithOrigins("http:localhost:4200")
+        policy.WithOrigins("http://localhost:4200")
                         .AllowAnyMethod()
                         .AllowAnyHeader();
         });
@@ -66,6 +70,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();//need to check this
 
 app.UseAuthorization();

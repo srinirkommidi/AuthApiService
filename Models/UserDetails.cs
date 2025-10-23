@@ -16,7 +16,13 @@ namespace LogInAuthService.Models
         public Address? Address { get; set; }
        
     }
-    
+
+    public class Credentials
+    {
+        public string Username { get; set; } = "";
+        public string Password { get; set; } = "";
+    }
+
     public class UserDetails
     {
         [Key]

@@ -1,4 +1,7 @@
-﻿using LogInAuthService.Models;
+﻿using LogInAuthService.Data;
+using LogInAuthService.Data.Interfaces;
+using LogInAuthService.Data.Repository;
+using LogInAuthService.Models;
 using LogInAuthService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,16 +15,21 @@ namespace LogInAuthService.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ITokenService _tokenService;
-        public AuthController(ITokenService tokenService)
+        public readonly IGenericRepository<User> _userRepository;
+        public AuthController(ITokenService tokenService, IGenericRepository<User> userRepository)
         {
-                _tokenService = tokenService;
+            _tokenService = tokenService;
+            _userRepository = userRepository;
+
         }
+        
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] User creds)
+        public IActionResult Login([FromBody] Credentials creds)
         {
-            // Demo: validate against hard-coded user. Replace with DB/Identity in real apps.
-            if (creds is null || creds.Username != "admin" || creds.Password != "admin123")
+            var user = GetUserByCredentials(creds.Username, creds.Password);
+
+            if (creds is null || creds.Username != user.Username || creds.Password != user.Password)     
             {
                 return Unauthorized(new { message = "Invalid credentials" });
             }
@@ -30,6 +38,11 @@ namespace LogInAuthService.Controllers
             return Ok(new { access_token = token, token_type = "Bearer", expires_in_minutes = 60 });
         }
 
+        private User GetUserByCredentials(string email, string password)
+        {
+            return _userRepository.GetSingleByCondition(
+                user => user.Username == email && user.Password == password);
+        }
         // GET: api/<AuthController>
         [Authorize]
         [HttpGet]

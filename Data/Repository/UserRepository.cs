@@ -3,8 +3,14 @@ using LogInAuthService.Models;
 
 namespace LogInAuthService.Data.Repository
 {
-    public class IUserRepository : IGenericRepository<User>
+    public class IUserRepository : IUserRepository<User>
     {
+        private readonly UserDBContext _context;
+        public IUserRepository(UserDBContext context)
+        {
+            _context = context;
+        }
+
         public void Add(User entity)
         {
             throw new NotImplementedException();
@@ -31,6 +37,11 @@ namespace LogInAuthService.Data.Repository
         }
 
         public Task<User> GetByIdAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<User> GetData(User entity)
         {
             throw new NotImplementedException();
         }
